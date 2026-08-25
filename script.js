@@ -98,11 +98,22 @@ function initApp() {
 
   function generateProductFields() {
     const count = parseInt(productCountInput.value, 10);
-    productsContainer.innerHTML = "";
+
+    if (isNaN(count) || count <= 0) {
+      productsContainer.innerHTML = "";
+      validationMessage.textContent = "";
+      orderSummary.textContent = "";
+      return;
+    }
+
+    // Idempotent: if the correct number of fields already exists, do
+    // nothing. This prevents wiping out values already typed into the
+    // product fields just because focus moves away from productCount
+    // (e.g. clicking into productName-0 triggers a "change" on blur).
+    if (productsContainer.children.length === count) return;
+
     validationMessage.textContent = "";
     orderSummary.textContent = "";
-
-    if (isNaN(count) || count <= 0) return;
 
     let fieldsHTML = "";
     for (let i = 0; i < count; i++) {
@@ -121,7 +132,11 @@ function initApp() {
     productsContainer.innerHTML = fieldsHTML;
   }
 
-  productCountInput.addEventListener("change", generateProductFields);
+  // Only "input" is needed — it fires on every value change (typing or
+  // programmatic dispatch). A separate "change" listener is deliberately
+  // NOT used: change also fires on blur, which would re-run this function
+  // and destroy/recreate the product fields (wiping anything already
+  // typed into them) just from moving focus to the next field.
   productCountInput.addEventListener("input", generateProductFields);
 
   function validateInputs(count) {
