@@ -1,10 +1,3 @@
-```[cite: 1, 3]
-
----
-
-### 2. `script.js` (I-save ito bilang `script.js` sa parehong folder)[cite: 1, 2]
-
-```javascript
 function calculateItemAmount(price, quantity) {
     return price * quantity;
 }
@@ -145,4 +138,3 @@ Final Amount: ₱${finalAmount.toFixed(2)}`;
 
     orderSummaryDiv.textContent = summaryText;
 });
-```[cite: 1, 2]
