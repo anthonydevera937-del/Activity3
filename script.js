@@ -53,21 +53,18 @@ function formatCurrency(amount) {
 
 // ---------- Generate dynamic product input fields ----------
 
-const generateBtn = document.getElementById("generateBtn");
+const productCountField = document.getElementById("productCount");
 const productsContainer = document.getElementById("productsContainer");
 const validationMessage = document.getElementById("validationMessage");
 const orderSummary = document.getElementById("orderSummary");
 
-generateBtn.addEventListener("click", function () {
-  validationMessage.textContent = "";
-  orderSummary.textContent = "";
+function generateProductFields() {
   productsContainer.innerHTML = "";
 
-  const productCount = parseInt(document.getElementById("productCount").value, 10);
+  const productCount = parseInt(productCountField.value, 10);
 
   if (isNaN(productCount) || productCount <= 0) {
-    validationMessage.textContent = "Please enter a valid number of products (greater than 0).";
-    return;
+    return false;
   }
 
   // Required: use a for loop to dynamically create product fields
@@ -88,7 +85,18 @@ generateBtn.addEventListener("click", function () {
 
     productsContainer.appendChild(block);
   }
+
+  return true;
+}
+
+// Fields regenerate automatically as soon as productCount changes,
+// so no extra button click is needed before Calculate Order.
+productCountField.addEventListener("input", function () {
+  validationMessage.textContent = "";
+  orderSummary.textContent = "";
+  generateProductFields();
 });
+productCountField.addEventListener("change", generateProductFields);
 
 // ---------- Calculate Order ----------
 
@@ -99,7 +107,7 @@ calculateBtn.addEventListener("click", function () {
   orderSummary.textContent = "";
 
   const customerName = document.getElementById("customerName").value.trim();
-  const productCount = parseInt(document.getElementById("productCount").value, 10);
+  const productCount = parseInt(productCountField.value, 10);
 
   let errors = [];
 
@@ -112,6 +120,16 @@ calculateBtn.addEventListener("click", function () {
   if (isNaN(productCount) || productCount <= 0) {
     errors.push("Number of products must be a valid positive number.");
     validationMessage.textContent = errors.join("\n");
+    return;
+  }
+
+  // Fallback: if fields for this count weren't generated yet
+  // (e.g. productCount was set without firing an input/change event),
+  // generate them now so calculation can still proceed.
+  if (!document.getElementById(`productName-${productCount - 1}`)) {
+    generateProductFields();
+    validationMessage.textContent =
+      "Product fields have been generated. Please fill them in and click Calculate Order again.";
     return;
   }
 
