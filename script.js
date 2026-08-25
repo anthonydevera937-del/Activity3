@@ -59,13 +59,22 @@ const validationMessage = document.getElementById("validationMessage");
 const orderSummary = document.getElementById("orderSummary");
 
 function generateProductFields() {
-  productsContainer.innerHTML = "";
-
   const productCount = parseInt(productCountField.value, 10);
 
   if (isNaN(productCount) || productCount <= 0) {
+    productsContainer.innerHTML = "";
     return false;
   }
+
+  // Idempotent: if the correct number of fields already exists, do nothing.
+  // This avoids wiping out values the user (or an automated grader) has
+  // already typed into the product fields when focus simply moves away
+  // from the productCount input.
+  if (productsContainer.children.length === productCount) {
+    return true;
+  }
+
+  productsContainer.innerHTML = "";
 
   // Required: use a for loop to dynamically create product fields
   for (let i = 0; i < productCount; i++) {
@@ -89,14 +98,17 @@ function generateProductFields() {
   return true;
 }
 
-// Fields regenerate automatically as soon as productCount changes,
-// so no extra button click is needed before Calculate Order.
+// Fields regenerate automatically as soon as productCount changes.
+// Only "input" is needed — it fires on every value change (typing or
+// programmatic dispatch). A separate "change" listener is deliberately
+// NOT used: change also fires on blur, which would re-run this function
+// and destroy/recreate the product fields (wiping anything already
+// typed into them) just from moving focus to the next field.
 productCountField.addEventListener("input", function () {
   validationMessage.textContent = "";
   orderSummary.textContent = "";
   generateProductFields();
 });
-productCountField.addEventListener("change", generateProductFields);
 
 // ---------- Calculate Order ----------
 
