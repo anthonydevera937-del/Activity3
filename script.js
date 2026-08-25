@@ -1,140 +1,203 @@
+// =======================================================
+// MINI STORE CHECKOUT SYSTEM
+// =======================================================
+
+// ---------- Required top-level calculation functions ----------
+// These must ONLY return values. No DOM access, no alert(), no prompt().
+
 function calculateItemAmount(price, quantity) {
-    return price * quantity;
+  return price * quantity;
 }
 
 function calculateDiscount(subtotal) {
-    let discount = 0;
-    if (subtotal >= 5000) {
-        discount = subtotal * 0.10;
-    } else if (subtotal >= 3000) {
-        discount = subtotal * 0.07;
-    } else if (subtotal >= 1000) {
-        discount = subtotal * 0.05;
-    } else {
-        discount = 0;
-    }
-    return discount;
+  let discountRate = 0;
+
+  if (subtotal >= 5000) {
+    discountRate = 0.10;
+  } else if (subtotal >= 3000) {
+    discountRate = 0.07;
+  } else if (subtotal >= 1000) {
+    discountRate = 0.05;
+  } else {
+    discountRate = 0;
+  }
+
+  return subtotal * discountRate;
 }
 
 function getDeliveryFee(option) {
-    let fee = 0;
-    switch (Number(option)) {
-        case 1:
-            fee = 0;
-            break;
-        case 2:
-            fee = 80;
-            break;
-        case 3:
-            fee = 150;
-            break;
-        default:
-            fee = 0;
-    }
-    return fee;
+  let fee = 0;
+
+  switch (Number(option)) {
+    case 1:
+      fee = 0;
+      break;
+    case 2:
+      fee = 80;
+      break;
+    case 3:
+      fee = 150;
+      break;
+    default:
+      fee = 0;
+  }
+
+  return fee;
 }
 
-const productCountInput = document.getElementById('productCount');
-const productsContainer = document.getElementById('productsContainer');
-const calculateBtn = document.getElementById('calculateBtn');
-const validationMessage = document.getElementById('validationMessage');
-const customerNameInput = document.getElementById('customerName');
-const deliveryOptionSelect = document.getElementById('deliveryOption');
-const orderSummaryDiv = document.getElementById('orderSummary');
+// ---------- Helper: currency formatting ----------
 
-productCountInput.addEventListener('input', function() {
-    const count = parseInt(productCountInput.value);
-    productsContainer.innerHTML = '';
-    
-    if (isNaN(count) || count <= 0) return;
+function formatCurrency(amount) {
+  return "\u20B1" + amount.toFixed(2);
+}
 
-    for (let i = 0; i < count; i++) {
-        const productDiv = document.createElement('div');
-        productDiv.style.marginBottom = '10px';
-        productDiv.innerHTML = `
-            <strong>Product ${i + 1}</strong><br>
-            <label>Product Name</label><br>
-            <input type="text" id="productName-${i}"><br>
-            <label>Price</label><br>
-            <input type="number" id="productPrice-${i}"><br>
-            <label>Quantity</label><br>
-            <input type="number" id="productQuantity-${i}"><br>
-        `;
-        productsContainer.appendChild(productDiv);
-    }
+// ---------- Generate dynamic product input fields ----------
+
+const generateBtn = document.getElementById("generateBtn");
+const productsContainer = document.getElementById("productsContainer");
+const validationMessage = document.getElementById("validationMessage");
+const orderSummary = document.getElementById("orderSummary");
+
+generateBtn.addEventListener("click", function () {
+  validationMessage.textContent = "";
+  orderSummary.textContent = "";
+  productsContainer.innerHTML = "";
+
+  const productCount = parseInt(document.getElementById("productCount").value, 10);
+
+  if (isNaN(productCount) || productCount <= 0) {
+    validationMessage.textContent = "Please enter a valid number of products (greater than 0).";
+    return;
+  }
+
+  // Required: use a for loop to dynamically create product fields
+  for (let i = 0; i < productCount; i++) {
+    const block = document.createElement("div");
+    block.className = "product-block";
+
+    block.innerHTML = `
+      <label for="productName-${i}">Product Name</label>
+      <input type="text" id="productName-${i}" placeholder="Product name" />
+
+      <label for="productPrice-${i}">Price</label>
+      <input type="number" id="productPrice-${i}" placeholder="Price" step="0.01" />
+
+      <label for="productQuantity-${i}">Quantity</label>
+      <input type="number" id="productQuantity-${i}" placeholder="Quantity" step="1" />
+    `;
+
+    productsContainer.appendChild(block);
+  }
 });
 
-calculateBtn.addEventListener('click', function() {
-    validationMessage.textContent = '';
-    orderSummaryDiv.textContent = '';
+// ---------- Calculate Order ----------
 
-    const customerName = customerNameInput.value.trim();
-    const count = parseInt(productCountInput.value);
+const calculateBtn = document.getElementById("calculateBtn");
 
-    if (customerName === '') {
-        validationMessage.textContent = 'Customer name cannot be empty.';
-        return;
+calculateBtn.addEventListener("click", function () {
+  validationMessage.textContent = "";
+  orderSummary.textContent = "";
+
+  const customerName = document.getElementById("customerName").value.trim();
+  const productCount = parseInt(document.getElementById("productCount").value, 10);
+
+  let errors = [];
+
+  // Validate customer name
+  if (customerName === "") {
+    errors.push("Customer name cannot be empty.");
+  }
+
+  // Validate product count
+  if (isNaN(productCount) || productCount <= 0) {
+    errors.push("Number of products must be a valid positive number.");
+    validationMessage.textContent = errors.join("\n");
+    return;
+  }
+
+  let subtotal = 0; // accumulator
+  let productDetails = "";
+
+  // Required: use a for loop to process each product
+  for (let i = 0; i < productCount; i++) {
+    const nameField = document.getElementById(`productName-${i}`);
+    const priceField = document.getElementById(`productPrice-${i}`);
+    const quantityField = document.getElementById(`productQuantity-${i}`);
+
+    if (!nameField || !priceField || !quantityField) {
+      errors.push(`Product ${i + 1} fields were not generated. Click "Generate Product Fields" first.`);
+      continue;
     }
 
-    if (isNaN(count) || count <= 0) {
-        validationMessage.textContent = 'Please enter a valid number of products.';
-        return;
+    const productName = nameField.value.trim();
+    const price = parseFloat(priceField.value);
+    const quantity = parseFloat(quantityField.value);
+
+    if (productName === "") {
+      errors.push(`Product ${i + 1}: name cannot be empty.`);
+    }
+    if (isNaN(price) || price <= 0) {
+      errors.push(`Product ${i + 1}: price must be a valid positive number.`);
+    }
+    if (isNaN(quantity) || quantity <= 0) {
+      errors.push(`Product ${i + 1}: quantity must be a valid positive number.`);
     }
 
-    let subtotal = 0;
-    let productDetails = '';
+    if (productName !== "" && !isNaN(price) && price > 0 && !isNaN(quantity) && quantity > 0) {
+      const itemAmount = calculateItemAmount(price, quantity);
+      subtotal += itemAmount; // accumulate
 
-    for (let i = 0; i < count; i++) {
-        const nameEl = document.getElementById(`productName-${i}`);
-        const priceEl = document.getElementById(`productPrice-${i}`);
-        const qtyEl = document.getElementById(`productQuantity-${i}`);
-
-        if (!nameEl || !priceEl || !qtyEl) {
-            validationMessage.textContent = 'Please fill up all product fields properly.';
-            return;
-        }
-
-        const name = nameEl.value.trim();
-        const price = parseFloat(priceEl.value);
-        const quantity = parseInt(qtyEl.value);
-
-        if (name === '' || isNaN(price) || price < 0 || isNaN(quantity) || quantity <= 0) {
-            validationMessage.textContent = `Please enter valid values for Product ${i + 1}.`;
-            return;
-        }
-
-        const amount = calculateItemAmount(price, quantity);
-        subtotal += amount;
-
-        productDetails += `${i + 1}. ${name}\n   Price: ₱${price.toFixed(2)}\n   Quantity: ${quantity}\n   Amount: ₱${amount.toFixed(2)}\n`;
+      productDetails += `${i + 1}. ${productName}\n`;
+      productDetails += `   Price: ${formatCurrency(price)}\n`;
+      productDetails += `   Quantity: ${quantity}\n`;
+      productDetails += `   Amount: ${formatCurrency(itemAmount)}\n\n`;
     }
+  }
 
-    const discountAmount = calculateDiscount(subtotal);
-    
-    let discountRateStr = 'No discount';
-    if (subtotal >= 5000) discountRateStr = '10%';
-    else if (subtotal >= 3000) discountRateStr = '7%';
-    else if (subtotal >= 1000) discountRateStr = '5%';
+  if (errors.length > 0) {
+    validationMessage.textContent = errors.join("\n");
+    return;
+  }
 
-    const optionVal = deliveryOptionSelect.value;
-    const deliveryFee = getDeliveryFee(optionVal);
+  // Determine discount
+  const discountAmount = calculateDiscount(subtotal);
+  const discountRate = subtotal >= 5000 ? 10 :
+                        subtotal >= 3000 ? 7 :
+                        subtotal >= 1000 ? 5 : 0;
 
-    let deliveryTypeName = 'Store Pickup';
-    if (optionVal === '2') deliveryTypeName = 'Standard Delivery';
-    else if (optionVal === '3') deliveryTypeName = 'Express Delivery';
+  // Determine delivery fee
+  const deliveryOption = document.getElementById("deliveryOption").value;
+  const deliveryFee = getDeliveryFee(deliveryOption);
 
-    const finalAmount = subtotal - discountAmount + deliveryFee;
+  let deliveryType = "";
+  switch (Number(deliveryOption)) {
+    case 1:
+      deliveryType = "Store Pickup";
+      break;
+    case 2:
+      deliveryType = "Standard Delivery";
+      break;
+    case 3:
+      deliveryType = "Express Delivery";
+      break;
+    default:
+      deliveryType = "Unknown";
+  }
 
-    const summaryText = `MINI STORE CHECKOUT SYSTEM
-Customer: ${customerName}
-${productDetails}
-ORDER SUMMARY
-Subtotal: ₱${subtotal.toFixed(2)}
-Discount Rate: ${discountRateStr}
-Discount Amount: ₱${discountAmount.toFixed(2)}
-Delivery Type: ${deliveryTypeName}
-Delivery Fee: ₱${deliveryFee.toFixed(2)}
-Final Amount: ₱${finalAmount.toFixed(2)}`;
+  // Final amount
+  const finalAmount = subtotal - discountAmount + deliveryFee;
 
-    orderSummaryDiv.textContent = summaryText;
+  // Build and display order summary
+  let summary = "MINI STORE CHECKOUT SYSTEM\n\n";
+  summary += `Customer: ${customerName}\n\n`;
+  summary += productDetails;
+  summary += "ORDER SUMMARY\n";
+  summary += `Subtotal: ${formatCurrency(subtotal)}\n`;
+  summary += `Discount Rate: ${discountRate}%\n`;
+  summary += `Discount Amount: ${formatCurrency(discountAmount)}\n`;
+  summary += `Delivery Type: ${deliveryType}\n`;
+  summary += `Delivery Fee: ${formatCurrency(deliveryFee)}\n`;
+  summary += `Final Amount: ${formatCurrency(finalAmount)}`;
+
+  orderSummary.textContent = summary;
 });
