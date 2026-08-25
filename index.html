@@ -1,107 +1,159 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mini Store Checkout System</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 20px;
-  }
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 20px 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  h1 {
-    text-align: center;
-    color: #2c3e50;
-    font-size: 22px;
-  }
-  label {
-    display: block;
-    margin-top: 12px;
-    font-weight: bold;
-    color: #333;
-  }
-  input, select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  .product-block {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 10px 15px;
-    margin-top: 15px;
-    background: #fafafa;
-  }
-  button {
-    margin-top: 20px;
-    width: 100%;
-    padding: 10px;
-    background: #2c7be5;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #1a5fc4;
-  }
-  #validationMessage {
-    color: #c0392b;
-    font-weight: bold;
-    margin-top: 10px;
-    white-space: pre-line;
-  }
-  #orderSummary {
-    margin-top: 20px;
-    background: #eef6ff;
-    padding: 15px;
-    border-radius: 6px;
-    white-space: pre-line;
-    font-family: "Courier New", monospace;
-  }
-</style>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini Store Checkout System</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f2f4f7;
+        margin: 0;
+        padding: 20px;
+        color: #222;
+      }
+      .app {
+        max-width: 720px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        text-align: center;
+        font-size: 24px;
+        letter-spacing: 1px;
+        color: #1b3a6b;
+        margin-bottom: 25px;
+      }
+      fieldset {
+        border: 1px solid #d9dee5;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        padding: 15px 18px;
+      }
+      legend {
+        font-weight: 600;
+        color: #1b3a6b;
+        padding: 0 6px;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-top: 10px;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #c3cad4;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      .product-block {
+        border: 1px dashed #b7c2d0;
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-top: 12px;
+        background: #f9fbfd;
+      }
+      .product-block h3 {
+        margin: 0 0 6px 0;
+        font-size: 14px;
+        color: #3a5a8c;
+      }
+      button {
+        background: #1b3a6b;
+        color: #fff;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-size: 15px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #14294d;
+      }
+      #validationMessage {
+        margin-top: 12px;
+        font-weight: 600;
+        white-space: pre-line;
+      }
+      .error {
+        color: #c0392b;
+      }
+      .success {
+        color: #1b7a3d;
+      }
+      #orderSummary {
+        margin-top: 20px;
+        background: #eef3fb;
+        border: 1px solid #cddbef;
+        border-radius: 8px;
+        padding: 16px 20px;
+        white-space: pre-wrap;
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>MINI STORE CHECKOUT SYSTEM</h1>
 
-<div class="container">
-  <h1>MINI STORE CHECKOUT SYSTEM</h1>
+      <fieldset>
+        <legend>Customer Information</legend>
 
-  <label for="customerName">Customer Name</label>
-  <input type="text" id="customerName" placeholder="Enter customer name" />
+        <label for="customerName">Customer Name</label>
+        <input
+          type="text"
+          id="customerName"
+          placeholder="Enter customer name"
+        />
 
-  <label for="productCount">Number of Products</label>
-  <input type="number" id="productCount" placeholder="Enter number of products" min="1" />
+        <label for="productCount">Number of Products</label>
+        <input
+          type="number"
+          id="productCount"
+          min="1"
+          step="1"
+          placeholder="Enter number of products"
+        />
+      </fieldset>
 
-  <div id="productsContainer"></div>
+      <fieldset>
+        <legend>Products</legend>
+        <div id="productsContainer">
+          <!-- Product input fields are generated here dynamically via a for loop -->
+        </div>
+      </fieldset>
 
-  <label for="deliveryOption">Delivery Option</label>
-  <select id="deliveryOption">
-    <option value="1">1 - Store Pickup</option>
-    <option value="2">2 - Standard Delivery</option>
-    <option value="3">3 - Express Delivery</option>
-  </select>
+      <fieldset>
+        <legend>Delivery</legend>
+        <label for="deliveryOption">Delivery Option</label>
+        <select id="deliveryOption">
+          <option value="1">1 - Store Pickup (₱0)</option>
+          <option value="2">2 - Standard Delivery (₱80)</option>
+          <option value="3">3 - Express Delivery (₱150)</option>
+        </select>
+      </fieldset>
 
-  <div id="validationMessage"></div>
+      <button id="calculateBtn">Calculate Order</button>
 
-  <button type="button" id="calculateBtn">Calculate Order</button>
+      <div id="validationMessage"></div>
 
-  <div id="orderSummary"></div>
-</div>
+      <div id="orderSummary"></div>
+    </div>
 
-<script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
