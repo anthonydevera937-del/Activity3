@@ -1,9 +1,14 @@
-// Required top-level function: calculateItemAmount
+```[cite: 1, 3]
+
+---
+
+### 2. `script.js` (I-save ito bilang `script.js` sa parehong folder)[cite: 1, 2]
+
+```javascript
 function calculateItemAmount(price, quantity) {
     return price * quantity;
 }
 
-// Required top-level function: calculateDiscount using if...else if...else
 function calculateDiscount(subtotal) {
     let discount = 0;
     if (subtotal >= 5000) {
@@ -18,7 +23,6 @@ function calculateDiscount(subtotal) {
     return discount;
 }
 
-// Required top-level function: getDeliveryFee using a switch statement
 function getDeliveryFee(option) {
     let fee = 0;
     switch (Number(option)) {
@@ -37,7 +41,6 @@ function getDeliveryFee(option) {
     return fee;
 }
 
-// DOM Elements
 const productCountInput = document.getElementById('productCount');
 const productsContainer = document.getElementById('productsContainer');
 const calculateBtn = document.getElementById('calculateBtn');
@@ -46,7 +49,6 @@ const customerNameInput = document.getElementById('customerName');
 const deliveryOptionSelect = document.getElementById('deliveryOption');
 const orderSummaryDiv = document.getElementById('orderSummary');
 
-// Generate dynamic product fields using a for loop when product count changes or on input
 productCountInput.addEventListener('input', function() {
     const count = parseInt(productCountInput.value);
     productsContainer.innerHTML = '';
@@ -69,7 +71,6 @@ productCountInput.addEventListener('input', function() {
     }
 });
 
-// Calculate button event listener
 calculateBtn.addEventListener('click', function() {
     validationMessage.textContent = '';
     orderSummaryDiv.textContent = '';
@@ -77,13 +78,11 @@ calculateBtn.addEventListener('click', function() {
     const customerName = customerNameInput.value.trim();
     const count = parseInt(productCountInput.value);
 
-    // Validation: Customer Name
     if (customerName === '') {
         validationMessage.textContent = 'Customer name cannot be empty.';
         return;
     }
 
-    // Validation: Product Count
     if (isNaN(count) || count <= 0) {
         validationMessage.textContent = 'Please enter a valid number of products.';
         return;
@@ -92,7 +91,6 @@ calculateBtn.addEventListener('click', function() {
     let subtotal = 0;
     let productDetails = '';
 
-    // Process each product using a for loop
     for (let i = 0; i < count; i++) {
         const nameEl = document.getElementById(`productName-${i}`);
         const priceEl = document.getElementById(`productPrice-${i}`);
@@ -107,7 +105,6 @@ calculateBtn.addEventListener('click', function() {
         const price = parseFloat(priceEl.value);
         const quantity = parseInt(qtyEl.value);
 
-        // Validation for product inputs
         if (name === '' || isNaN(price) || price < 0 || isNaN(quantity) || quantity <= 0) {
             validationMessage.textContent = `Please enter valid values for Product ${i + 1}.`;
             return;
@@ -119,7 +116,6 @@ calculateBtn.addEventListener('click', function() {
         productDetails += `${i + 1}. ${name}\n   Price: ₱${price.toFixed(2)}\n   Quantity: ${quantity}\n   Amount: ₱${amount.toFixed(2)}\n`;
     }
 
-    // Compute Discount and Delivery Fee
     const discountAmount = calculateDiscount(subtotal);
     
     let discountRateStr = 'No discount';
@@ -136,7 +132,6 @@ calculateBtn.addEventListener('click', function() {
 
     const finalAmount = subtotal - discountAmount + deliveryFee;
 
-    // Display Order Summary
     const summaryText = `MINI STORE CHECKOUT SYSTEM
 Customer: ${customerName}
 ${productDetails}
@@ -150,3 +145,4 @@ Final Amount: ₱${finalAmount.toFixed(2)}`;
 
     orderSummaryDiv.textContent = summaryText;
 });
+```[cite: 1, 2]
