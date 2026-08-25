@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Store Checkout System</title>
+</head>
+<body>
+
+    <h2>MINI STORE CHECKOUT SYSTEM</h2>
+    
+    <div>
+        <label for="customerName">Customer Name</label>
+        <input type="text" id="customerName">
+    </div>
+    <br>
+
+    <div>
+        <label for="productCount">Number of Products</label>
+        <input type="number" id="productCount">
+    </div>
+    <br>
+
+    <div id="productsContainer"></div>
+
+    <div>
+        <label for="deliveryOption">Delivery Option</label>
+        <select id="deliveryOption">
+            <option value="1">Store Pickup</option>
+            <option value="2">Standard Delivery</option>
+            <option value="3">Express Delivery</option>
+        </select>
+    </div>
+    <br>
+
+    <div id="validationMessage" style="color: red;"></div>
+    <br>
+
+    <button type="button" id="calculateBtn">Calculate Order</button>
+
+    <h3>Order Summary</h3>
+    <pre id="orderSummary"></pre>
+
+    <script src="script.js"></script>
+</body>
+</html>
